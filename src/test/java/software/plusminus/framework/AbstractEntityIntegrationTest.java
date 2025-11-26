@@ -1,0 +1,134 @@
+package software.plusminus.framework;
+
+import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNull;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import software.plusminus.check.util.JsonUtils;
+import software.plusminus.context.Context;
+import software.plusminus.framework.fixtures.TestEntity;
+import software.plusminus.jwt.service.IssuerContext;
+import software.plusminus.jwt.service.JwtGenerator;
+import software.plusminus.security.Security;
+import software.plusminus.tenant.context.TenantContext;
+
+import java.util.Collections;
+import java.util.stream.Stream;
+import javax.persistence.EntityManager;
+
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SuppressWarnings("PMD")
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Transactional
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+public class AbstractEntityIntegrationTest {
+
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private JwtGenerator jwtGenerator;
+    @Autowired
+    private EntityManager entityManager;
+
+    @MockBean
+    private IssuerContext issuerContext;
+    @SpyBean
+    private TenantContext tenantContext;
+
+    private TestEntity entity1;
+    private TestEntity entity2;
+    private TestEntity entity3;
+    private TestEntity entityWithUnknownTenant;
+    private TestEntity entityWithEmptyTenant;
+    private TestEntity deletedEntity;
+
+    @BeforeClass
+    public static void beforeClass() {
+        Context.init();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        Context.clear();
+    }
+
+    @Before
+    public void before() {
+        entity1 = readTestEntity();
+        entity1.setId(null);
+        entity1.setTenant("localhost");
+
+        entity2 = readTestEntity();
+        entity2.setId(null);
+        entity2.setTenant("localhost");
+
+        entityWithUnknownTenant = readTestEntity();
+        entityWithUnknownTenant.setId(null);
+        entityWithUnknownTenant.setTenant("Unknown tenant");
+
+        entityWithEmptyTenant = readTestEntity();
+        entityWithEmptyTenant.setId(null);
+        entityWithEmptyTenant.setTenant("");
+
+        deletedEntity = readTestEntity();
+        deletedEntity.setId(null);
+        deletedEntity.setDeleted(true);
+
+        entity3 = readTestEntity();
+        entity3.setId(null);
+        entity3.setTenant("localhost");
+
+        doReturn("localhost", "localhost", "Unknown tenant", "", "Some tenant", "localhost")
+                .when(tenantContext).get();
+        Stream.of(entity1, entity2, entityWithUnknownTenant, entityWithEmptyTenant, deletedEntity, entity3)
+                .forEach(entityManager::persist);
+        doCallRealMethod().when(tenantContext).get();
+        when(issuerContext.get()).thenReturn("localhost");
+    }
+
+    @Test
+    public void filteredByTest() throws Exception {
+        mvc.perform(get("/test?page=0&size=100")
+                .header("Authorization", "Bearer " + generateToken()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content.length()", Is.is(3)))
+                .andExpect(jsonPath("$.content[0].id", Is.is(1)))
+                .andExpect(jsonPath("$.content[0].modifiedTime", IsNull.notNullValue()))
+                .andExpect(jsonPath("$.content[1].id", Is.is(2)))
+                .andExpect(jsonPath("$.content[2].id", Is.is(6)));
+    }
+
+    private TestEntity readTestEntity() {
+        return JsonUtils.fromJson("/json/test-entity.json", TestEntity.class);
+    }
+
+    private String generateToken() {
+        Security security = Security.builder()
+                .parameters(Collections.singletonMap("tenant", "localhost"))
+                .build();
+        return jwtGenerator.generateAccessToken(security);
+    }
+}
