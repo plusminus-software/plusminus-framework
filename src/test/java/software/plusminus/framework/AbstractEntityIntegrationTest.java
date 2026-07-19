@@ -2,9 +2,7 @@ package software.plusminus.framework;
 
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import software.plusminus.check.util.JsonUtils;
-import software.plusminus.context.Context;
+import software.plusminus.check.util.JsonUtil;
 import software.plusminus.framework.fixtures.TestEntity;
 import software.plusminus.jwt.service.IssuerContext;
 import software.plusminus.jwt.service.JwtGenerator;
@@ -63,16 +60,6 @@ public class AbstractEntityIntegrationTest {
     private TestEntity entityWithUnknownTenant;
     private TestEntity entityWithEmptyTenant;
     private TestEntity deletedEntity;
-
-    @BeforeClass
-    public static void beforeClass() {
-        Context.init();
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        Context.clear();
-    }
 
     @Before
     public void before() {
@@ -122,7 +109,7 @@ public class AbstractEntityIntegrationTest {
     }
 
     private TestEntity readTestEntity() {
-        return JsonUtils.fromJson("/json/test-entity.json", TestEntity.class);
+        return JsonUtil.fromJson("/json/test-entity.json", TestEntity.class);
     }
 
     private String generateToken() {
