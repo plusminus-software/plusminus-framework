@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 @Admin
 @Data
@@ -22,5 +23,8 @@ public class TestEntity extends AbstractEntity {
 
     @ElementCollection
     private List<String> list = new ArrayList<>();
+
+    @ManyToOne
+    private TestEntity reference;
 
 }
