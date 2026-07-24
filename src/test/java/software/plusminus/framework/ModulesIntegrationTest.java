@@ -14,16 +14,21 @@ import software.plusminus.job.Step;
 import software.plusminus.metadata.MetadataContext;
 import software.plusminus.patch.service.PatchService;
 import software.plusminus.spring.SpringUtil;
+import software.plusminus.tenant.annotation.Tenant;
 import software.plusminus.type.ParseService;
 import software.plusminus.type.model.Type;
+import software.plusminus.util.EntityUtils;
+import software.plusminus.util.FieldUtils;
 
+import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static software.plusminus.check.Checks.check;
 
 /* Covers the standalone plusminus modules working inside one framework application context:
-   type, patch, job, collection, spring, metadata, file/s3 autoconfig. */
+   type, patch, job, collection, spring, metadata, utils, file/s3 autoconfig. */
 public class ModulesIntegrationTest extends FrameworkIntegrationTest {
 
     @Autowired
@@ -89,6 +94,21 @@ public class ModulesIntegrationTest extends FrameworkIntegrationTest {
         Class<Object> entityClass = MetadataContext.getClass("TestEntity");
 
         assertThat(entityClass).isEqualTo(TestEntity.class);
+    }
+
+    @Test
+    public void utilsModuleFindsEntityId() {
+        TestEntity entity = readTestEntity();
+
+        check(EntityUtils.findId(entity, Long.class)).is(1L);
+    }
+
+    @Test
+    public void utilsModuleFindsAnnotatedFieldOfFrameworkEntity() {
+        Optional<Field> field = FieldUtils.findFirstWithAnnotation(TestEntity.class, Tenant.class);
+
+        check(field).isNotEmpty();
+        check(field.get().getName()).is("tenant");
     }
 
     @Test

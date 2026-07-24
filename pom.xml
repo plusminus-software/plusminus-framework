@@ -78,6 +78,26 @@
         </dependency>
         <dependency>
             <groupId>software.plusminus</groupId>
+            <artifactId>plusminus-softdelete</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>software.plusminus</groupId>
+            <artifactId>plusminus-tenant</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>software.plusminus</groupId>
+            <artifactId>plusminus-audit</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>software.plusminus</groupId>
+            <artifactId>plusminus-sync</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>software.plusminus</groupId>
             <artifactId>plusminus-s3</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -106,30 +126,6 @@
         <dependency>
             <groupId>software.plusminus</groupId>
             <artifactId>plusminus-collection</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>software.plusminus</groupId>
-            <artifactId>plusminus-softdelete</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>software.plusminus</groupId>
-            <artifactId>plusminus-tenant</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>software.plusminus</groupId>
-            <artifactId>plusminus-audit</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>software.plusminus</groupId>
-            <artifactId>plusminus-sync</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
@@ -165,3 +161,23 @@
         </repository>
     </repositories>
 </project>
+
+<!--
+plusminus-framework:
+parent
+admin (no type)
+test (no selenium/check)
+http + transactional (no context, scope)
+data (+softdelete/tenant/audit/sync)
+s3 (no file)
+security
+spring
+utils
+
+out of framework
+collection
+inject
+generator
+job
+moduler/replacer/repository/sandbox/workflows
+-->
