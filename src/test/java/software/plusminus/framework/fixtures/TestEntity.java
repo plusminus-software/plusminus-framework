@@ -3,11 +3,14 @@ package software.plusminus.framework.fixtures;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 import software.plusminus.admin.annotation.Admin;
 import software.plusminus.framework.model.AbstractEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -26,5 +29,12 @@ public class TestEntity extends AbstractEntity {
 
     @ManyToOne
     private TestEntity reference;
+
+    @CreatedBy
+    @Column(updatable = false)
+    private String createdBy;
+
+    @LastModifiedBy
+    private String modifiedBy;
 
 }

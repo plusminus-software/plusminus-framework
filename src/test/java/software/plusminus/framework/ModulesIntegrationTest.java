@@ -107,7 +107,7 @@ public class ModulesIntegrationTest extends FrameworkIntegrationTest {
     public void utilsModuleFindsAnnotatedFieldOfFrameworkEntity() {
         Optional<Field> field = FieldUtils.findFirstWithAnnotation(TestEntity.class, Tenant.class);
 
-        check(field).isNotEmpty();
+        check(field).isPresent();
         check(field.get().getName()).is("tenant");
     }
 

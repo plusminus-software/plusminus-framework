@@ -18,8 +18,10 @@ import software.plusminus.security.Security;
 import software.plusminus.tenant.context.TenantContext;
 import software.plusminus.test.IntegrationTest;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.doReturn;
 public abstract class FrameworkIntegrationTest extends IntegrationTest {
 
     protected static final String TENANT = "localhost";
+    protected static final String USERNAME = "TestUser";
     protected static final String CURRENT_DEVICE = "CurrentDevice";
     protected static final String OTHER_DEVICE = "OtherDevice";
 
@@ -106,13 +109,18 @@ public abstract class FrameworkIntegrationTest extends IntegrationTest {
     }
 
     protected String generateToken(String tenant, String device) {
+        return generateToken(tenant, device, Collections.emptySet());
+    }
+
+    protected String generateToken(String tenant, String device, Set<String> roles) {
         doReturn(tenant).when(issuerContext).get();
         try {
             Map<String, String> parameters = new HashMap<>();
             parameters.put("tenant", tenant);
             parameters.put("device", device);
             return security().generateToken(Security.builder()
-                    .username("TestUser")
+                    .username(USERNAME)
+                    .roles(roles)
                     .parameters(parameters)
                     .build());
         } finally {

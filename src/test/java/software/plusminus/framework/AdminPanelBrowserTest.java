@@ -32,7 +32,7 @@ public class AdminPanelBrowserTest extends FrameworkBrowserTest {
         login("TestUser", "admin");
         go("/admin");
 
-        Element app = find("#app").one();
+        Element app = find("#app");
 
         check(app.isDisplayed()).isTrue();
     }

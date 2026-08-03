@@ -37,22 +37,22 @@ public class LoginBrowserTest extends FrameworkBrowserTest {
     @Test
     public void loginThroughBrowser() {
         registerUser();
-        find("#email").one().sendKeys(EMAIL);
-        find("#password").one().sendKeys(PASSWORD);
-        find("#submit").one().click();
+        find("#email").sendKeys(EMAIL);
+        find("#password").sendKeys(PASSWORD);
+        find("#submit").click();
 
-        String greeting = browser().currentPage().find("#greeting").one().text();
+        String greeting = find("#greeting").text();
         check(greeting).is("Logged in");
     }
 
     @Test
     public void badCredentialsShowError() {
         registerUser();
-        find("#email").one().sendKeys(EMAIL);
-        find("#password").one().sendKeys("wrong-password");
-        find("#submit").one().click();
+        find("#email").sendKeys(EMAIL);
+        find("#password").sendKeys("wrong-password");
+        find("#submit").click();
 
-        String error = browser().currentPage().find("#error").one().text();
+        String error = find("#error").text();
         check(error).is("Invalid username or password!");
     }
 
