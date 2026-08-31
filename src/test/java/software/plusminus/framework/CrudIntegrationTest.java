@@ -10,7 +10,6 @@ import software.plusminus.framework.fixtures.TestEntity;
 import java.io.IOException;
 import javax.persistence.EntityManager;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static software.plusminus.check.Checks.check;
 
 /* Covers plusminus-data (CrudController + DataService), plusminus-json (class property),
@@ -31,9 +30,10 @@ public class CrudIntegrationTest extends FrameworkIntegrationTest {
         JsonNode json = objectMapper.readTree(response.getBody());
         check(json.get("id").asLong()).is(1L);
         check(json.get("myField").asText()).is("created");
-        check(json.get("tenant").asText()).is(TENANT);
-        assertThat(json.get("uuid").asText()).isNotEmpty();
-        assertThat(json.get("modifiedTime")).isNotNull();
+        check(json.get("tenant")).isNull();
+        check(entityManager.find(TestEntity.class, 1L).getTenant()).is(TENANT);
+        check(json.get("uuid").asText()).isNotEmpty();
+        check(json.get("modifiedTime")).isNotNull();
         check(json.get("version").asLong()).is(0L);
     }
 
@@ -103,6 +103,6 @@ public class CrudIntegrationTest extends FrameworkIntegrationTest {
         check(content.size()).is(0);
 
         TestEntity inDatabase = entityManager.find(TestEntity.class, entity.getId());
-        assertThat(inDatabase).isNull();
+        check(inDatabase).isNull();
     }
 }

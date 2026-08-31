@@ -40,6 +40,8 @@ public class SyncEndpointIntegrationTest extends FrameworkIntegrationTest {
         entity2.setTenant(TENANT);
         create(OTHER_DEVICE, entity2);
 
+        entity1.setTenant(null);
+        entity2.setTenant(null);
         List<Sync<TestEntity>> expected = Arrays.asList(
                 Sync.of(entity1, SyncType.CREATE, 1L, null),
                 Sync.of(entity2, SyncType.CREATE, 2L, null));

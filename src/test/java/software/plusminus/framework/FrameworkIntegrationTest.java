@@ -74,6 +74,13 @@ public abstract class FrameworkIntegrationTest extends IntegrationTest {
         return exchange(path, HttpMethod.GET, null);
     }
 
+    protected ResponseEntity<String> httpGet(String path, Set<String> roles) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(TENANT, CURRENT_DEVICE, roles));
+        return restTemplate().exchange(web().url() + path, HttpMethod.GET,
+                new HttpEntity<>(headers), String.class);
+    }
+
     protected ResponseEntity<String> httpPost(String path, String json) {
         return exchange(path, HttpMethod.POST, json);
     }

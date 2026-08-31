@@ -15,6 +15,7 @@ import software.plusminus.json.model.ApiObject;
 import software.plusminus.softdelete.annotation.SoftDelete;
 import software.plusminus.sync.annotation.Syncable;
 import software.plusminus.tenant.annotation.Tenant;
+import software.plusminus.visible.annotation.Visible;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -54,6 +55,7 @@ public abstract class AbstractEntity implements ApiObject {
     /* Can be used for partitioning like spokusasnu(partition-1), spokusasnu(partition-2) */
     @Tenant
     @Column(updatable = false)
+    @Visible(Visible.ADMIN)
     private String tenant;
 
     @SoftDelete
