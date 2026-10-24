@@ -1,6 +1,7 @@
 package software.plusminus.framework;
 
 import org.junit.Test;
+import software.plusminus.context.Context;
 import software.plusminus.transactional.context.TransactionalContext;
 
 import java.util.ArrayList;
@@ -10,15 +11,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static software.plusminus.check.Checks.check;
 
-/* Covers plusminus-transactional: the JPA transaction manager is wrapped by ContextTransactionManager,
-   so TransactionalContext caches a value for the lifetime of the current transaction and throws
+/* Covers plusminus-transactional: TransactionalContext keeps a value for the lifetime of the current
+   transaction (a TransactionSynchronizationManager resource) and throws
    when accessed outside of one. */
 public class TransactionalContextIntegrationTest extends FrameworkIntegrationTest {
 
     @Test
     public void cachesValuePerTransaction() {
         AtomicInteger counter = new AtomicInteger();
-        TransactionalContext<Integer> context = TransactionalContext.of(counter::incrementAndGet);
+        Context<Integer> context = TransactionalContext.of(counter::incrementAndGet);
 
         List<Integer> firstTransaction = new ArrayList<>();
         data().transaction().run(() -> {
@@ -37,7 +38,7 @@ public class TransactionalContextIntegrationTest extends FrameworkIntegrationTes
 
     @Test
     public void getOutsideTransactionThrows() {
-        TransactionalContext<Integer> context = TransactionalContext.of(() -> 1);
+        Context<Integer> context = TransactionalContext.of(() -> 1);
 
         assertThatThrownBy(context::get)
                 .isInstanceOf(IllegalStateException.class);
