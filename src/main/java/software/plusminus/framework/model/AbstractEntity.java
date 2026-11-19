@@ -8,6 +8,7 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Type;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import software.plusminus.audit.annotation.Auditable;
 import software.plusminus.json.annotation.Uuid;
@@ -65,6 +66,7 @@ public abstract class AbstractEntity implements ApiObject {
     @Version
     private Long version;
 
+    @LastModifiedDate
     private ZonedDateTime modifiedTime = ZonedDateTime.now();
 
 }
